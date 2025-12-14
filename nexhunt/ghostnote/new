@@ -1,0 +1,25 @@
+int64_t edit_note()
+{
+    void* fsbase;
+    int64_t rax = *(uint64_t*)((char*)fsbase + 0x28);
+    printf("Index: ");
+    int32_t index = get_int();
+    
+    if (index < 0 || index > 9 || !*(uint64_t*)(((int64_t)index << 3) + &notes))
+        puts("Invalid index or empty.");
+    else
+    {
+        printf("New Content: ");
+        read(0, *(uint64_t*)(((int64_t)index << 3) + &notes), 
+            (int64_t)*(uint32_t*)(((int64_t)index << 2) + &note_sizes));
+        puts("Note updated.");
+    }
+    
+    int64_t result = rax ^ *(uint64_t*)((char*)fsbase + 0x28);
+    
+    if (!result)
+        return result;
+    
+    __stack_chk_fail();
+    /* no return */
+}
